@@ -1,0 +1,2237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandarin Restaurant Tycoon: Chinese Character Diner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #2c1810 0%, #4a2c2a 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* HEADER */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 3px solid #e67e22;
+            box-shadow: 0 0 20px rgba(230, 126, 34, 0.4);
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 3rem;
+            filter: drop-shadow(0 0 10px rgba(230, 126, 34, 0.7));
+        }
+        
+        .logo-text h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(90deg, #e67e22, #f1c40f);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+        }
+        
+        .logo-text .subtitle {
+            color: #f1c40f;
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+        
+        /* AUDIO CONTROLS */
+        .audio-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .audio-btn {
+            background: rgba(52, 73, 94, 0.8);
+            border: 2px solid #3498db;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+        
+        .audio-btn:hover {
+            transform: scale(1.1);
+            background: rgba(41, 128, 185, 0.9);
+        }
+        
+        .audio-btn.muted {
+            background: rgba(231, 76, 60, 0.8);
+            border-color: #e74c3c;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        }
+        
+        /* RESTAURANT STATS */
+        .restaurant-stats {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: rgba(52, 73, 94, 0.8);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid #e67e22;
+            min-width: 120px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f1c40f;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.7);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #ecf0f1;
+        }
+        
+        /* MAIN GAME AREA */
+        .game-area {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        /* RESTAURANT VIEW */
+        .restaurant-view {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 25px;
+            border: 3px solid #16a085;
+            box-shadow: 0 0 20px rgba(22, 160, 133, 0.4);
+            position: relative;
+            min-height: 600px;
+            overflow: hidden;
+        }
+        
+        .restaurant-title {
+            color: #16a085;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .restaurant-floor {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 20px;
+            height: 500px;
+            position: relative;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%232c3e50"/><path d="M0,50 L100,50 M50,0 L50,100" stroke="%231a252f" stroke-width="1"/></svg>');
+            background-size: 50px;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .table {
+            background: linear-gradient(135deg, #8b4513, #a0522d);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid #d35400;
+        }
+        
+        .table:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
+            border-color: #f1c40f;
+        }
+        
+        .table.active {
+            border-color: #2ecc71;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.7);
+        }
+        
+        .table-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #e74c3c;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .customer {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .order-bubble {
+            background: white;
+            color: #2c3e50;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 5px;
+            border: 2px solid #f1c40f;
+            min-width: 50px;
+            text-align: center;
+        }
+        
+        .order-timer {
+            position: absolute;
+            bottom: 5px;
+            width: 80%;
+            height: 5px;
+            background: #7f8c8d;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .timer-fill {
+            height: 100%;
+            background: #2ecc71;
+            width: 100%;
+            transition: width 1s linear;
+        }
+        
+        /* KITCHEN AREA */
+        .kitchen-area {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: rgba(44, 62, 80, 0.9);
+            border-top: 3px solid #e67e22;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .chef {
+            width: 80px;
+            height: 80px;
+            background: #e74c3c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .ingredients {
+            display: flex;
+            gap: 15px;
+            flex: 1;
+        }
+        
+        .ingredient {
+            width: 70px;
+            height: 70px;
+            background: #f1c40f;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: grab;
+            border: 2px solid #f39c12;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .ingredient:hover {
+            transform: scale(1.1);
+            border-color: #16a085;
+            box-shadow: 0 0 15px rgba(22, 160, 133, 0.7);
+        }
+        
+        .ingredient.used {
+            opacity: 0.5;
+            transform: scale(0.9);
+            cursor: not-allowed;
+        }
+        
+        /* RIGHT PANEL */
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .panel {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 20px;
+            border: 3px solid #9b59b6;
+            box-shadow: 0 0 15px rgba(155, 89, 182, 0.4);
+        }
+        
+        .panel-title {
+            color: #9b59b6;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #8e44ad;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* MENU PANEL */
+        .menu-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .menu-item {
+            background: rgba(52, 152, 219, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #3498db;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-3px);
+            background: rgba(52, 152, 219, 0.4);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .menu-item.selected {
+            border-color: #f1c40f;
+            background: rgba(241, 196, 15, 0.2);
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
+        }
+        
+        .menu-character {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #f1c40f;
+        }
+        
+        .menu-name {
+            font-size: 1rem;
+            color: #ecf0f1;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        
+        .menu-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2ecc71;
+            text-align: center;
+        }
+        
+        /* CHARACTER LEARNING */
+        .character-learning {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .current-character {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #34495e;
+        }
+        
+        .character-display {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #f1c40f;
+            margin: 10px 0;
+            text-shadow: 0 0 15px rgba(241, 196, 15, 0.7);
+        }
+        
+        .character-info {
+            background: rgba(46, 204, 113, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-label {
+            color: #bdc3c7;
+        }
+        
+        .info-value {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+        
+        .character-strokes {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .stroke {
+            width: 40px;
+            height: 40px;
+            background: #e74c3c;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        /* UPGRADES PANEL */
+        .upgrades-panel {
+            border-color: #e67e22;
+            box-shadow: 0 0 15px rgba(230, 126, 34, 0.4);
+        }
+        
+        .upgrades-panel .panel-title {
+            color: #e67e22;
+            border-bottom-color: #d35400;
+        }
+        
+        .upgrades-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .upgrade-item {
+            background: rgba(231, 126, 34, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e67e22;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .upgrade-item:hover {
+            background: rgba(231, 126, 34, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .upgrade-info h4 {
+            color: #f1c40f;
+            margin-bottom: 5px;
+        }
+        
+        .upgrade-info p {
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+        
+        .upgrade-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+        
+        .buy-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .buy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.7);
+        }
+        
+        .buy-btn:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* ORDER QUEUE */
+        .order-queue {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 15px;
+            padding: 15px;
+            border: 3px solid #e74c3c;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+            z-index: 10;
+        }
+        
+        .queue-title {
+            color: #e74c3c;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .queue-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .queue-item {
+            background: rgba(231, 76, 60, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .queue-character {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #f1c40f;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .queue-info {
+            flex: 1;
+        }
+        
+        .queue-table {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+        
+        /* NOTIFICATION BADGE */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            animation: pulse 1s infinite;
+        }
+        
+        /* MESSAGES */
+        .message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px 50px;
+            border-radius: 20px;
+            border: 3px solid #f1c40f;
+            box-shadow: 0 0 50px rgba(241, 196, 15, 0.7);
+            text-align: center;
+            z-index: 100;
+            display: none;
+            min-width: 400px;
+        }
+        
+        .message.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .message h2 {
+            color: #f1c40f;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .message p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #ecf0f1;
+        }
+        
+        .message-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .message-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #2980b9, #3498db);
+        }
+        
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -40%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes bellRing {
+            0% { transform: rotate(0deg); }
+            10% { transform: rotate(15deg); }
+            20% { transform: rotate(-15deg); }
+            30% { transform: rotate(10deg); }
+            40% { transform: rotate(-10deg); }
+            50% { transform: rotate(5deg); }
+            60% { transform: rotate(-5deg); }
+            70% { transform: rotate(2deg); }
+            80% { transform: rotate(-2deg); }
+            90% { transform: rotate(1deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .float {
+            animation: float 3s infinite;
+        }
+        
+        .bell-ring {
+            animation: bellRing 0.5s ease;
+        }
+        
+        .slide-in {
+            animation: slideIn 0.3s ease;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .game-area {
+                grid-template-columns: 1fr;
+            }
+            
+            .restaurant-floor {
+                grid-template-columns: repeat(3, 1fr);
+                height: 400px;
+            }
+            
+            .order-queue {
+                position: relative;
+                top: 0;
+                right: 0;
+                width: 100%;
+                margin-top: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .game-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .restaurant-stats {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .restaurant-floor {
+                grid-template-columns: repeat(2, 1fr);
+                height: 300px;
+            }
+            
+            .menu-items {
+                grid-template-columns: 1fr;
+            }
+            
+            .audio-controls {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-top: 10px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- AUDIO ELEMENTS (HIDDEN) -->
+    <audio id="backgroundMusic" loop>
+        <!-- Audio sintetis untuk musik latar -->
+        <source src="" type="audio/mpeg">
+        Browser Anda tidak mendukung audio.
+    </audio>
+    
+    <audio id="customerEnterSound">
+        <!-- Audio sintetis untuk suara pelanggan masuk -->
+        <source src="" type="audio/mpeg">
+        Browser Anda tidak mendukung audio.
+    </audio>
+    
+    <audio id="orderCompleteSound">
+        <!-- Audio sintetis untuk suara pesanan berhasil -->
+        <source src="" type="audio/mpeg">
+        Browser Anda tidak mendukung audio.
+    </audio>
+    
+    <audio id="orderWrongSound">
+        <!-- Audio sintetis untuk suara pesanan salah -->
+        <source src="" type="audio/mpeg">
+        Browser Anda tidak mendukung audio.
+    </audio>
+    
+    <audio id="upgradeSound">
+        <!-- Audio sintetis untuk suara upgrade -->
+        <source src="" type="audio/mpeg">
+        Browser Anda tidak mendukung audio.
+    </audio>
+    
+    <div class="game-container">
+        <!-- HEADER -->
+        <header class="game-header">
+            <div class="logo">
+                <div class="logo-icon">🍜</div>
+                <div class="logo-text">
+                    <h1>Mandarin Restaurant Tycoon</h1>
+                    <div class="subtitle">Belajar Hanzi Sambil Mengelola Restoran!</div>
+                </div>
+            </div>
+            
+            <div class="restaurant-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="money">¥500</div>
+                    <div class="stat-label">Uang</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="reputation">75%</div>
+                    <div class="stat-label">Reputasi</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="day">1</div>
+                    <div class="stat-label">Hari</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="customersServed">0</div>
+                    <div class="stat-label">Pelanggan</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="charactersLearned">0/14</div>
+                    <div class="stat-label">Karakter</div>
+                </div>
+            </div>
+            
+            <!-- AUDIO CONTROLS -->
+            <div class="audio-controls">
+                <button class="audio-btn" id="musicToggle" title="Toggle Musik">
+                    🎵
+                </button>
+                <button class="audio-btn" id="soundToggle" title="Toggle Suara">
+                    🔊
+                </button>
+            </div>
+        </header>
+        
+        <!-- MAIN GAME AREA -->
+        <div class="game-area">
+            <!-- RESTAURANT VIEW -->
+            <div class="restaurant-view">
+                <h2 class="restaurant-title">🏮 Restoran "Hanzi Harmony"</h2>
+                
+                <div class="restaurant-floor" id="restaurantFloor">
+                    <!-- Tables will be added dynamically -->
+                </div>
+                
+                <!-- KITCHEN AREA -->
+                <div class="kitchen-area">
+                    <div class="chef">👨‍🍳</div>
+                    <div class="ingredients" id="ingredients">
+                        <!-- Ingredients will be added dynamically -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SIDE PANEL -->
+            <div class="side-panel">
+                <!-- MENU PANEL -->
+                <div class="panel">
+                    <h3 class="panel-title">📋 Menu Restoran</h3>
+                    <div class="menu-items" id="menuItems">
+                        <!-- Menu items will be added dynamically -->
+                    </div>
+                </div>
+                
+                <!-- CHARACTER LEARNING PANEL -->
+                <div class="panel">
+                    <h3 class="panel-title">📚 Belajar Karakter</h3>
+                    <div class="character-learning">
+                        <div class="current-character">
+                            <div class="character-display" id="currentCharacter">男</div>
+                            <div class="character-info">
+                                <div class="info-row">
+                                    <span class="info-label">Arti:</span>
+                                    <span class="info-value" id="characterMeaning">Laki-laki</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Pinyin:</span>
+                                    <span class="info-value" id="characterPinyin">nán</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Penggunaan:</span>
+                                    <span class="info-value" id="characterUsage">男人 (nánrén) - pria</span>
+                                </div>
+                            </div>
+                            <div class="character-strokes" id="characterStrokes">
+                                <!-- Stroke order will be added dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- UPGRADES PANEL -->
+                <div class="panel upgrades-panel">
+                    <h3 class="panel-title">⚡ Upgrade Restoran</h3>
+                    <div class="upgrades-list" id="upgradesList">
+                        <!-- Upgrades will be added dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ORDER QUEUE -->
+    <div class="order-queue">
+        <div class="queue-title">
+            ⏳ Antrian Pesanan
+            <div class="notification-badge" id="queueBadge" style="display: none;">0</div>
+        </div>
+        <div class="queue-items" id="orderQueue">
+            <!-- Queue items will be added dynamically -->
+        </div>
+    </div>
+    
+    <!-- MESSAGE POPUP -->
+    <div class="message" id="messagePopup">
+        <h2 id="messageTitle">Selamat Datang!</h2>
+        <p id="messageText">Selamat datang di Restoran Hanzi Harmony! Layani pelanggan dengan memilih menu yang sesuai dengan karakter yang mereka pesan.</p>
+        <div>
+            <button class="message-btn" id="startGameBtn">Mulai Game</button>
+            <button class="message-btn" id="tutorialBtn">Tutorial</button>
+        </div>
+    </div>
+
+    <script>
+        // GAME STATE
+        const gameState = {
+            money: 500,
+            reputation: 75,
+            day: 1,
+            customersServed: 0,
+            charactersLearned: 0,
+            selectedMenu: null,
+            activeTable: null,
+            orders: [],
+            upgrades: [],
+            learnedCharacters: new Set(),
+            gameActive: false,
+            gameSpeed: 1,
+            tableCount: 4,
+            audioEnabled: true,
+            musicEnabled: true,
+            soundEnabled: true
+        };
+
+        // MENU DATABASE
+        const menuDatabase = [
+            {
+                character: "男",
+                pinyin: "nán",
+                meaning: "laki-laki",
+                usage: "男人 (nánrén) - pria",
+                menuName: "Nasi Goreng Laki-laki",
+                description: "Nasi goreng extra pedas dengan daging sapi",
+                price: 45,
+                ingredients: ["🍚", "🌶️", "🥩"],
+                strokes: 7,
+                strokeOrder: [1, 2, 3, 4, 5, 6, 7]
+            },
+            {
+                character: "女",
+                pinyin: "nǚ",
+                meaning: "perempuan",
+                usage: "女人 (nǚrén) - wanita",
+                menuName: "Es Krim Perempuan",
+                description: "Es krim strawberry dengan topping coklat",
+                price: 35,
+                ingredients: ["🍦", "🍓", "🍫"],
+                strokes: 3,
+                strokeOrder: [1, 2, 3]
+            },
+            {
+                character: "合",
+                pinyin: "hé",
+                meaning: "gabung, cocok",
+                usage: "合作 (hézuò) - kerjasama",
+                menuName: "Hotpot Gabungan",
+                description: "Hotpot dengan berbagai bahan segar",
+                price: 120,
+                ingredients: ["🍲", "🥩", "🥬"],
+                strokes: 6,
+                strokeOrder: [1, 2, 3, 4, 5, 6]
+            },
+            {
+                character: "唱",
+                pinyin: "chàng",
+                meaning: "menyanyi",
+                usage: "唱歌 (chànggē) - menyanyi",
+                menuName: "Dimsum Nyanyian",
+                description: "Dimsum dengan isian ayam dan udang",
+                price: 55,
+                ingredients: ["🥟", "🐔", "🦐"],
+                strokes: 11,
+                strokeOrder: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+            },
+            {
+                character: "比",
+                pinyin: "bǐ",
+                meaning: "bandingkan, kompetisi",
+                usage: "比赛 (bǐsài) - kompetisi",
+                menuName: "Bakmi Kompetisi",
+                description: "Bakmi dengan dua jenis topping",
+                price: 50,
+                ingredients: ["🍜", "🥩", "🍄"],
+                strokes: 4,
+                strokeOrder: [1, 2, 3, 4]
+            },
+            {
+                character: "赛",
+                pinyin: "sài",
+                meaning: "kompetisi, lomba",
+                usage: "赛车 (sàichē) - balap mobil",
+                menuName: "Sate Lomba",
+                description: "Sate dengan bumbu kacang spesial",
+                price: 65,
+                ingredients: ["🍢", "🥜", "🌶️"],
+                strokes: 14,
+                strokeOrder: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+            },
+            {
+                character: "开",
+                pinyin: "kāi",
+                meaning: "buka, mulai",
+                usage: "开始 (kāishǐ) - mulai",
+                menuName: "Sup Pembuka",
+                description: "Sup ayam dengan jamur dan sayuran",
+                price: 40,
+                ingredients: ["🍲", "🐔", "🍄"],
+                strokes: 4,
+                strokeOrder: [1, 2, 3, 4]
+            },
+            {
+                character: "始",
+                pinyin: "shǐ",
+                meaning: "mulai, awal",
+                usage: "始终 (shǐzhōng) - dari awal sampai akhir",
+                menuName: "Sushi Awal",
+                description: "Sushi dengan ikan salmon segar",
+                price: 75,
+                ingredients: ["🍣", "🐟", "🍚"],
+                strokes: 8,
+                strokeOrder: [1, 2, 3, 4, 5, 6, 7, 8]
+            },
+            {
+                character: "第",
+                pinyin: "dì",
+                meaning: "awalan bilangan bertingkat",
+                usage: "第一 (dì yī) - pertama",
+                menuName: "Teh Tarik Nomor Satu",
+                description: "Teh tarik dengan rasa khas",
+                price: 25,
+                ingredients: ["🍵", "🥛", "🍯"],
+                strokes: 11,
+                strokeOrder: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+            },
+            {
+                character: "出",
+                pinyin: "chū",
+                meaning: "keluar, tampil",
+                usage: "出场 (chūchǎng) - tampil",
+                menuName: "Ayam Geprek Tampil",
+                description: "Ayam geprek dengan sambal level",
+                price: 60,
+                ingredients: ["🍗", "🌶️", "🍚"],
+                strokes: 5,
+                strokeOrder: [1, 2, 3, 4, 5]
+            },
+            {
+                character: "年",
+                pinyin: "nián",
+                meaning: "tahun",
+                usage: "年级 (niánjí) - tingkatan kelas",
+                menuName: "Nasi Tahun Baru",
+                description: "Nasi dengan lauk lengkap",
+                price: 55,
+                ingredients: ["🍚", "🥩", "🥚"],
+                strokes: 6,
+                strokeOrder: [1, 2, 3, 4, 5, 6]
+            },
+            {
+                character: "级",
+                pinyin: "jí",
+                meaning: "tingkat, level",
+                usage: "等级 (děngjí) - tingkat, kelas",
+                menuName: "Bakso Level",
+                description: "Bakso dengan isian keju",
+                price: 40,
+                ingredients: ["🍡", "🧀", "🍜"],
+                strokes: 6,
+                strokeOrder: [1, 2, 3, 4, 5, 6]
+            },
+            {
+                character: "参",
+                pinyin: "cān",
+                meaning: "ikut serta",
+                usage: "参加 (cānjiā) - ikut serta",
+                menuName: "Salad Partisipasi",
+                description: "Salad dengan dressing spesial",
+                price: 35,
+                ingredients: ["🥗", "🍅", "🥒"],
+                strokes: 8,
+                strokeOrder: [1, 2, 3, 4, 5, 6, 7, 8]
+            },
+            {
+                character: "加",
+                pinyin: "jiā",
+                meaning: "tambah",
+                usage: "加入 (jiārù) - bergabung",
+                menuName: "Extra Topping",
+                description: "Topping tambahan untuk makanan",
+                price: 15,
+                ingredients: ["🧀", "🥓", "🍄"],
+                strokes: 5,
+                strokeOrder: [1, 2, 3, 4, 5]
+            },
+            {
+                character: "得",
+                pinyin: "dé",
+                meaning: "mendapat, memperoleh",
+                usage: "得到 (dédào) - mendapatkan",
+                menuName: "Martabak Penuh Berkat",
+                description: "Martabak dengan topping lengkap",
+                price: 70,
+                ingredients: ["🥞", "🍫", "🧀"],
+                strokes: 11,
+                strokeOrder: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+            },
+            {
+                character: "希",
+                pinyin: "xī",
+                meaning: "harapan, langka",
+                usage: "希望 (xīwàng) - harapan",
+                menuName: "Kue Harapan",
+                description: "Kue coklat dengan isian spesial",
+                price: 45,
+                ingredients: ["🍰", "🍫", "🍓"],
+                strokes: 7,
+                strokeOrder: [1, 2, 3, 4, 5, 6, 7]
+            },
+            {
+                character: "望",
+                pinyin: "wàng",
+                meaning: "berharap, melihat jauh",
+                usage: "愿望 (yuànwàng) - keinginan",
+                menuName: "Minuman Harapan",
+                description: "Minuman segar dengan buah-buahan",
+                price: 30,
+                ingredients: ["🥤", "🍊", "🍋"],
+                strokes: 11,
+                strokeOrder: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+            },
+            {
+                character: "赢",
+                pinyin: "yíng",
+                meaning: "menang",
+                usage: "赢家 (yíngjiā) - pemenang",
+                menuName: "Menu Kemenangan",
+                description: "Paket lengkap dengan berbagai hidangan",
+                price: 150,
+                ingredients: ["🍱", "🍣", "🍜"],
+                strokes: 17,
+                strokeOrder: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+            },
+            {
+                character: "上",
+                pinyin: "shàng",
+                meaning: "atas, naik",
+                usage: "上台 (shàngtái) - naik panggung",
+                menuName: "Sate Naik Panggung",
+                description: "Sate dengan bumbu kacang kental",
+                price: 50,
+                ingredients: ["🍢", "🥜", "🌶️"],
+                strokes: 3,
+                strokeOrder: [1, 2, 3]
+            },
+            {
+                character: "台",
+                pinyin: "tái",
+                meaning: "panggung, meja",
+                usage: "舞台 (wǔtái) - panggung",
+                menuName: "Hotpot Meja",
+                description: "Hotpot untuk berbagi di meja",
+                price: 130,
+                ingredients: ["🍲", "🥩", "🦐"],
+                strokes: 5,
+                strokeOrder: [1, 2, 3, 4, 5]
+            }
+        ];
+
+        // UPGRADES DATABASE
+        const upgradesDatabase = [
+            {
+                id: 1,
+                name: "Meja Tambahan",
+                description: "Tambahkan 1 meja untuk lebih banyak pelanggan",
+                price: 300,
+                effect: "tableCount",
+                value: 1,
+                purchased: false
+            },
+            {
+                id: 2,
+                name: "Koki Cepat",
+                description: "Kecepatan memasak meningkat 20%",
+                price: 500,
+                effect: "gameSpeed",
+                value: 1.2,
+                purchased: false
+            },
+            {
+                id: 3,
+                name: "Pelatihan Karakter",
+                description: "Pelajari 3 karakter baru sekaligus",
+                price: 400,
+                effect: "charactersLearned",
+                value: 3,
+                purchased: false
+            },
+            {
+                id: 4,
+                name: "Menu Spesial",
+                description: "Buka menu baru yang lebih mahal",
+                price: 600,
+                effect: "menuUnlocked",
+                value: true,
+                purchased: false
+            },
+            {
+                id: 5,
+                name: "Dekorasi Restoran",
+                description: "Tingkatkan reputasi restoran",
+                price: 450,
+                effect: "reputation",
+                value: 10,
+                purchased: false
+            }
+        ];
+
+        // AUDIO FUNCTIONS - Menggunakan Web Audio API untuk membuat audio sintetis
+        function createBackgroundMusic() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(329.63, audioContext.currentTime); // Frekuensi E4
+                
+                gainNode.gain.setValueAtTime(0.05, audioContext.currentTime); // Volume rendah
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                return { oscillator, gainNode, audioContext };
+            } catch (e) {
+                console.log("Web Audio API tidak didukung:", e);
+                return null;
+            }
+        }
+        
+        function playCustomerEnterSound() {
+            if (!gameState.soundEnabled || !gameState.audioEnabled) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                console.log("Tidak dapat memutar suara:", e);
+                // Fallback menggunakan HTML Audio
+                try {
+                    const audio = new Audio();
+                    const source = document.createElement('source');
+                    
+                    // Coba membuat data audio sederhana
+                    audio.volume = 0.5;
+                    audio.play().catch(e => console.log("Audio play gagal:", e));
+                } catch (e2) {
+                    console.log("Fallback audio juga gagal:", e2);
+                }
+            }
+        }
+        
+        function playOrderCompleteSound() {
+            if (!gameState.soundEnabled || !gameState.audioEnabled) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Buat suara "cha-ching" sederhana
+                const playNote = (frequency, startTime, duration) => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.type = 'triangle';
+                    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                    
+                    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + startTime + 0.05);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + startTime + duration);
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.start(audioContext.currentTime + startTime);
+                    oscillator.stop(audioContext.currentTime + startTime + duration);
+                };
+                
+                playNote(659.25, 0, 0.1); // E5
+                playNote(830.61, 0.1, 0.1); // G#5
+                playNote(1046.50, 0.2, 0.2); // C6
+            } catch (e) {
+                console.log("Tidak dapat memutar suara selesai:", e);
+            }
+        }
+        
+        function playOrderWrongSound() {
+            if (!gameState.soundEnabled || !gameState.audioEnabled) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(220, audioContext.currentTime); // A3
+                oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.5); // Turun ke A2
+                
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log("Tidak dapat memutar suara salah:", e);
+            }
+        }
+        
+        function playUpgradeSound() {
+            if (!gameState.soundEnabled || !gameState.audioEnabled) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Buat suara lonceng sederhana
+                const playBell = (frequency, startTime) => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                    
+                    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + startTime + 0.05);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + startTime + 1);
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.start(audioContext.currentTime + startTime);
+                    oscillator.stop(audioContext.currentTime + startTime + 1);
+                };
+                
+                playBell(783.99, 0); // G5
+                playBell(1046.50, 0.1); // C6
+                playBell(1318.51, 0.2); // E6
+            } catch (e) {
+                console.log("Tidak dapat memutar suara upgrade:", e);
+            }
+        }
+        
+        function playClickSound() {
+            if (!gameState.soundEnabled || !gameState.audioEnabled) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.05);
+            } catch (e) {
+                console.log("Tidak dapat memutar suara klik:", e);
+            }
+        }
+        
+        let backgroundMusic = null;
+        
+        function startBackgroundMusic() {
+            if (!gameState.musicEnabled || !gameState.audioEnabled) return;
+            
+            if (!backgroundMusic) {
+                backgroundMusic = createBackgroundMusic();
+                if (backgroundMusic && backgroundMusic.oscillator) {
+                    backgroundMusic.oscillator.start();
+                }
+            }
+        }
+        
+        function stopBackgroundMusic() {
+            if (backgroundMusic && backgroundMusic.oscillator) {
+                backgroundMusic.oscillator.stop();
+                backgroundMusic = null;
+            }
+        }
+        
+        function toggleMusic() {
+            gameState.musicEnabled = !gameState.musicEnabled;
+            musicToggle.classList.toggle('muted', !gameState.musicEnabled);
+            
+            if (gameState.musicEnabled) {
+                startBackgroundMusic();
+            } else {
+                stopBackgroundMusic();
+            }
+        }
+        
+        function toggleSound() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            soundToggle.classList.toggle('muted', !gameState.soundEnabled);
+        }
+        
+        function toggleAudio() {
+            gameState.audioEnabled = !gameState.audioEnabled;
+            if (gameState.audioEnabled) {
+                startBackgroundMusic();
+                musicToggle.classList.remove('muted');
+                soundToggle.classList.remove('muted');
+            } else {
+                stopBackgroundMusic();
+                musicToggle.classList.add('muted');
+                soundToggle.classList.add('muted');
+            }
+        }
+
+        // DOM ELEMENTS
+        const restaurantFloor = document.getElementById('restaurantFloor');
+        const ingredients = document.getElementById('ingredients');
+        const menuItems = document.getElementById('menuItems');
+        const orderQueue = document.getElementById('orderQueue');
+        const upgradesList = document.getElementById('upgradesList');
+        const queueBadge = document.getElementById('queueBadge');
+        
+        // Stats elements
+        const moneyEl = document.getElementById('money');
+        const reputationEl = document.getElementById('reputation');
+        const dayEl = document.getElementById('day');
+        const customersServedEl = document.getElementById('customersServed');
+        const charactersLearnedEl = document.getElementById('charactersLearned');
+        
+        // Character learning elements
+        const currentCharacterEl = document.getElementById('currentCharacter');
+        const characterMeaningEl = document.getElementById('characterMeaning');
+        const characterPinyinEl = document.getElementById('characterPinyin');
+        const characterUsageEl = document.getElementById('characterUsage');
+        const characterStrokesEl = document.getElementById('characterStrokes');
+        
+        // Audio control elements
+        const musicToggle = document.getElementById('musicToggle');
+        const soundToggle = document.getElementById('soundToggle');
+        
+        // Message popup
+        const messagePopup = document.getElementById('messagePopup');
+        const messageTitle = document.getElementById('messageTitle');
+        const messageText = document.getElementById('messageText');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const tutorialBtn = document.getElementById('tutorialBtn');
+
+        // GAME FUNCTIONS
+        function initializeGame() {
+            // Initialize game state
+            gameState.money = 500;
+            gameState.reputation = 75;
+            gameState.day = 1;
+            gameState.customersServed = 0;
+            gameState.charactersLearned = 0;
+            gameState.learnedCharacters.clear();
+            gameState.gameActive = true;
+            gameState.gameSpeed = 1;
+            gameState.tableCount = 4;
+            gameState.orders = [];
+            gameState.upgrades = JSON.parse(JSON.stringify(upgradesDatabase));
+            
+            // Update UI
+            updateStats();
+            
+            // Initialize restaurant floor
+            initializeRestaurantFloor();
+            
+            // Initialize menu
+            initializeMenu();
+            
+            // Initialize upgrades
+            initializeUpgrades();
+            
+            // Initialize character learning
+            initializeCharacterLearning();
+            
+            // Start background music
+            startBackgroundMusic();
+            
+            // Start game loop
+            startGameLoop();
+            
+            // Close message popup
+            messagePopup.classList.remove('active');
+            
+            // Show welcome message
+            setTimeout(() => {
+                showMessage("Game Dimulai!", "Layani pelanggan dengan memilih menu yang sesuai dengan karakter yang mereka pesan. Klik meja untuk melihat pesanan!");
+            }, 500);
+        }
+        
+        function initializeRestaurantFloor() {
+            restaurantFloor.innerHTML = '';
+            
+            for (let i = 1; i <= gameState.tableCount; i++) {
+                const table = document.createElement('div');
+                table.className = 'table';
+                table.dataset.tableId = i;
+                
+                table.innerHTML = `
+                    <div class="table-number">${i}</div>
+                    <div class="customer">?</div>
+                    <div class="order-bubble">-</div>
+                    <div class="order-timer">
+                        <div class="timer-fill"></div>
+                    </div>
+                `;
+                
+                table.addEventListener('click', () => selectTable(i));
+                
+                restaurantFloor.appendChild(table);
+            }
+        }
+        
+        function initializeMenu() {
+            menuItems.innerHTML = '';
+            
+            // Show only first 8 menus initially
+            const initialMenus = menuDatabase.slice(0, 8);
+            
+            initialMenus.forEach((menu, index) => {
+                const menuItem = document.createElement('div');
+                menuItem.className = 'menu-item';
+                menuItem.dataset.menuIndex = index;
+                
+                menuItem.innerHTML = `
+                    <div class="menu-character">${menu.character}</div>
+                    <div class="menu-name">${menu.menuName}</div>
+                    <div class="menu-price">¥${menu.price}</div>
+                `;
+                
+                menuItem.addEventListener('click', () => selectMenu(index));
+                
+                menuItems.appendChild(menuItem);
+            });
+        }
+        
+        function initializeUpgrades() {
+            upgradesList.innerHTML = '';
+            
+            gameState.upgrades.forEach((upgrade, index) => {
+                const upgradeItem = document.createElement('div');
+                upgradeItem.className = 'upgrade-item';
+                
+                upgradeItem.innerHTML = `
+                    <div class="upgrade-info">
+                        <h4>${upgrade.name}</h4>
+                        <p>${upgrade.description}</p>
+                    </div>
+                    <div class="upgrade-price">¥${upgrade.price}</div>
+                    <button class="buy-btn" data-upgrade-id="${upgrade.id}" ${upgrade.purchased || gameState.money < upgrade.price ? 'disabled' : ''}>
+                        ${upgrade.purchased ? 'Terbeli' : 'Beli'}
+                    </button>
+                `;
+                
+                upgradesList.appendChild(upgradeItem);
+            });
+            
+            // Add event listeners to buy buttons
+            document.querySelectorAll('.buy-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const upgradeId = parseInt(e.target.dataset.upgradeId);
+                    buyUpgrade(upgradeId);
+                });
+            });
+        }
+        
+        function initializeCharacterLearning() {
+            // Set initial character to learn
+            setCharacterToLearn(menuDatabase[0]);
+            
+            // Initialize ingredients
+            updateIngredients();
+        }
+        
+        function setCharacterToLearn(character) {
+            currentCharacterEl.textContent = character.character;
+            characterMeaningEl.textContent = character.meaning;
+            characterPinyinEl.textContent = character.pinyin;
+            characterUsageEl.textContent = character.usage;
+            
+            // Update stroke order
+            characterStrokesEl.innerHTML = '';
+            character.strokeOrder.forEach(stroke => {
+                const strokeEl = document.createElement('div');
+                strokeEl.className = 'stroke';
+                strokeEl.textContent = stroke;
+                characterStrokesEl.appendChild(strokeEl);
+            });
+        }
+        
+        function updateIngredients() {
+            ingredients.innerHTML = '';
+            
+            if (gameState.selectedMenu !== null) {
+                const menu = menuDatabase[gameState.selectedMenu];
+                
+                menu.ingredients.forEach((ingredient, index) => {
+                    const ingredientEl = document.createElement('div');
+                    ingredientEl.className = 'ingredient';
+                    ingredientEl.textContent = ingredient;
+                    ingredientEl.dataset.ingredientIndex = index;
+                    ingredientEl.draggable = true;
+                    
+                    ingredientEl.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', index);
+                    });
+                    
+                    ingredients.appendChild(ingredientEl);
+                });
+            } else {
+                // Show default ingredients
+                const defaultIngredients = ["🍚", "🥩", "🥬", "🍜", "🐔", "🍄"];
+                
+                defaultIngredients.forEach((ingredient, index) => {
+                    const ingredientEl = document.createElement('div');
+                    ingredientEl.className = 'ingredient';
+                    ingredientEl.textContent = ingredient;
+                    ingredientEl.dataset.ingredientIndex = index;
+                    
+                    ingredients.appendChild(ingredientEl);
+                });
+            }
+        }
+        
+        function updateStats() {
+            moneyEl.textContent = `¥${gameState.money}`;
+            reputationEl.textContent = `${gameState.reputation}%`;
+            dayEl.textContent = gameState.day;
+            customersServedEl.textContent = gameState.customersServed;
+            charactersLearnedEl.textContent = `${gameState.charactersLearned}/14`;
+        }
+        
+        function selectTable(tableId) {
+            // Play click sound
+            playClickSound();
+            
+            // Deselect previous table
+            if (gameState.activeTable) {
+                const prevTable = document.querySelector(`[data-table-id="${gameState.activeTable}"]`);
+                if (prevTable) prevTable.classList.remove('active');
+            }
+            
+            // Select new table
+            gameState.activeTable = tableId;
+            const table = document.querySelector(`[data-table-id="${tableId}"]`);
+            table.classList.add('active');
+            
+            // Check if table has customer
+            const order = gameState.orders.find(o => o.tableId === tableId);
+            if (order) {
+                // Show order details
+                setCharacterToLearn(order.menu);
+                showMessage(`Pesanan Meja ${tableId}`, `Pelanggan memesan: ${order.menu.menuName} (${order.menu.character})`);
+            } else {
+                showMessage(`Meja ${tableId} Kosong`, "Tidak ada pelanggan di meja ini.");
+            }
+        }
+        
+        function selectMenu(menuIndex) {
+            // Play click sound
+            playClickSound();
+            
+            // Deselect previous menu
+            if (gameState.selectedMenu !== null) {
+                const prevMenu = document.querySelector(`[data-menu-index="${gameState.selectedMenu}"]`);
+                if (prevMenu) prevMenu.classList.remove('selected');
+            }
+            
+            // Select new menu
+            gameState.selectedMenu = menuIndex;
+            const menuItem = document.querySelector(`[data-menu-index="${menuIndex}"]`);
+            menuItem.classList.add('selected');
+            
+            // Update character learning
+            const menu = menuDatabase[menuIndex];
+            setCharacterToLearn(menu);
+            
+            // Update ingredients
+            updateIngredients();
+            
+            // If there's an active table with order, try to serve
+            if (gameState.activeTable) {
+                const order = gameState.orders.find(o => o.tableId === gameState.activeTable);
+                if (order && order.menuIndex === menuIndex) {
+                    serveOrder(gameState.activeTable);
+                }
+            }
+        }
+        
+        function spawnCustomer() {
+            if (!gameState.gameActive) return;
+            
+            // Find empty table
+            const occupiedTables = gameState.orders.map(o => o.tableId);
+            const emptyTables = [];
+            
+            for (let i = 1; i <= gameState.tableCount; i++) {
+                if (!occupiedTables.includes(i)) {
+                    emptyTables.push(i);
+                }
+            }
+            
+            if (emptyTables.length === 0) return;
+            
+            // Select random empty table
+            const tableId = emptyTables[Math.floor(Math.random() * emptyTables.length)];
+            
+            // Select random menu
+            const menuIndex = Math.floor(Math.random() * Math.min(8 + gameState.charactersLearned, menuDatabase.length));
+            const menu = menuDatabase[menuIndex];
+            
+            // Create order
+            const order = {
+                tableId: tableId,
+                menuIndex: menuIndex,
+                menu: menu,
+                time: 60, // seconds
+                timer: null,
+                progress: 100
+            };
+            
+            gameState.orders.push(order);
+            
+            // Play customer enter sound
+            playCustomerEnterSound();
+            
+            // Animate the table to indicate new customer
+            const table = document.querySelector(`[data-table-id="${tableId}"]`);
+            table.classList.add('slide-in');
+            setTimeout(() => table.classList.remove('slide-in'), 300);
+            
+            // Update table display
+            const customer = table.querySelector('.customer');
+            const orderBubble = table.querySelector('.order-bubble');
+            const timerFill = table.querySelector('.timer-fill');
+            
+            // Random customer emoji
+            const customerEmojis = ["👨", "👩", "👨‍🦳", "👩‍🦰", "👨‍💼", "👩‍💼"];
+            customer.textContent = customerEmojis[Math.floor(Math.random() * customerEmojis.length)];
+            
+            // Show order character
+            orderBubble.textContent = menu.character;
+            
+            // Start timer
+            order.timer = setInterval(() => {
+                order.time--;
+                order.progress = (order.time / 60) * 100;
+                
+                if (timerFill) {
+                    timerFill.style.width = `${order.progress}%`;
+                    
+                    // Change color based on time
+                    if (order.time < 15) {
+                        timerFill.style.background = '#e74c3c';
+                    } else if (order.time < 30) {
+                        timerFill.style.background = '#f39c12';
+                    }
+                }
+                
+                // Time's up
+                if (order.time <= 0) {
+                    clearInterval(order.timer);
+                    cancelOrder(tableId);
+                }
+            }, 1000 / gameState.gameSpeed);
+            
+            // Update order queue
+            updateOrderQueue();
+            
+            // Show notification for new customer
+            if (Math.random() > 0.5) {
+                showTemporaryMessage(`Pelanggan baru di Meja ${tableId}!`, '#3498db');
+            }
+            
+            // Animate the queue badge
+            animateQueueBadge();
+        }
+        
+        function serveOrder(tableId) {
+            const orderIndex = gameState.orders.findIndex(o => o.tableId === tableId);
+            if (orderIndex === -1) return;
+            
+            const order = gameState.orders[orderIndex];
+            
+            // Check if selected menu matches order
+            if (gameState.selectedMenu === order.menuIndex) {
+                // Successful order
+                clearInterval(order.timer);
+                
+                // Play success sound
+                playOrderCompleteSound();
+                
+                // Calculate earnings
+                const baseEarnings = order.menu.price;
+                const timeBonus = Math.floor(order.time / 10) * 5;
+                const totalEarnings = baseEarnings + timeBonus;
+                
+                // Update game state
+                gameState.money += totalEarnings;
+                gameState.customersServed++;
+                gameState.reputation = Math.min(100, gameState.reputation + 2);
+                
+                // Check if character is learned
+                if (!gameState.learnedCharacters.has(order.menu.character)) {
+                    gameState.learnedCharacters.add(order.menu.character);
+                    gameState.charactersLearned++;
+                    
+                    // Show character learned message
+                    showTemporaryMessage(`Karakter Baru Dikuasai: ${order.menu.character}`, '#2ecc71');
+                }
+                
+                // Update UI
+                updateStats();
+                
+                // Reset table
+                const table = document.querySelector(`[data-table-id="${tableId}"]`);
+                const customer = table.querySelector('.customer');
+                const orderBubble = table.querySelector('.order-bubble');
+                const timerFill = table.querySelector('.timer-fill');
+                
+                customer.textContent = "✓";
+                customer.style.background = '#2ecc71';
+                orderBubble.textContent = "";
+                timerFill.style.width = '0%';
+                
+                // Animate success
+                customer.classList.add('pulse');
+                
+                // Show success message
+                showTemporaryMessage(`Pesanan berhasil! +¥${totalEarnings}`, '#2ecc71');
+                
+                // Remove order
+                gameState.orders.splice(orderIndex, 1);
+                
+                // Update order queue
+                updateOrderQueue();
+                
+                // Deselect table after delay
+                setTimeout(() => {
+                    customer.textContent = "?";
+                    customer.style.background = '#3498db';
+                    customer.classList.remove('pulse');
+                    table.classList.remove('active');
+                    gameState.activeTable = null;
+                }, 2000);
+                
+                // Check for day completion
+                if (gameState.customersServed % 5 === 0) {
+                    gameState.day++;
+                    dayEl.textContent = gameState.day;
+                    
+                    // Play day completion sound
+                    playUpgradeSound();
+                    
+                    // Show day completion message
+                    if (gameState.customersServed % 10 === 0) {
+                        showMessage(`Hari ${gameState.day} Selesai!`, `Kamu telah melayani ${gameState.customersServed} pelanggan dan mempelajari ${gameState.charactersLearned} karakter!`);
+                    }
+                }
+            } else {
+                // Wrong order
+                playOrderWrongSound();
+                
+                gameState.reputation = Math.max(0, gameState.reputation - 5);
+                updateStats();
+                
+                // Animate the table to indicate error
+                const table = document.querySelector(`[data-table-id="${tableId}"]`);
+                table.style.animation = 'none';
+                setTimeout(() => {
+                    table.style.animation = 'pulse 0.5s';
+                    setTimeout(() => {
+                        table.style.animation = '';
+                    }, 500);
+                }, 10);
+                
+                showTemporaryMessage("Pesanan salah! Kurangi reputasi.", '#e74c3c');
+            }
+        }
+        
+        function cancelOrder(tableId) {
+            const orderIndex = gameState.orders.findIndex(o => o.tableId === tableId);
+            if (orderIndex === -1) return;
+            
+            const order = gameState.orders[orderIndex];
+            
+            // Play failure sound
+            playOrderWrongSound();
+            
+            // Update reputation
+            gameState.reputation = Math.max(0, gameState.reputation - 10);
+            updateStats();
+            
+            // Reset table
+            const table = document.querySelector(`[data-table-id="${tableId}"]`);
+            const customer = table.querySelector('.customer');
+            const orderBubble = table.querySelector('.order-bubble');
+            const timerFill = table.querySelector('.timer-fill');
+            
+            customer.textContent = "✗";
+            customer.style.background = '#e74c3c';
+            orderBubble.textContent = "";
+            timerFill.style.width = '0%';
+            
+            // Show failure message
+            showTemporaryMessage(`Pelanggan menunggu terlalu lama! -10% reputasi`, '#e74c3c');
+            
+            // Remove order
+            gameState.orders.splice(orderIndex, 1);
+            
+            // Update order queue
+            updateOrderQueue();
+            
+            // Deselect table after delay
+            setTimeout(() => {
+                customer.textContent = "?";
+                customer.style.background = '#3498db';
+                table.classList.remove('active');
+                gameState.activeTable = null;
+            }, 2000);
+        }
+        
+        function updateOrderQueue() {
+            orderQueue.innerHTML = '';
+            
+            // Update queue badge
+            if (gameState.orders.length > 0) {
+                queueBadge.textContent = gameState.orders.length;
+                queueBadge.style.display = 'flex';
+                
+                // Animate badge if more than 3 orders
+                if (gameState.orders.length > 3) {
+                    queueBadge.style.animation = 'pulse 1s infinite';
+                } else {
+                    queueBadge.style.animation = '';
+                }
+            } else {
+                queueBadge.style.display = 'none';
+            }
+            
+            if (gameState.orders.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.style.textAlign = 'center';
+                emptyMsg.style.color = '#7f8c8d';
+                emptyMsg.style.padding = '20px';
+                emptyMsg.textContent = 'Tidak ada pesanan';
+                orderQueue.appendChild(emptyMsg);
+                return;
+            }
+            
+            gameState.orders.forEach(order => {
+                const queueItem = document.createElement('div');
+                queueItem.className = 'queue-item';
+                
+                queueItem.innerHTML = `
+                    <div class="queue-character">${order.menu.character}</div>
+                    <div class="queue-info">
+                        <div>${order.menu.menuName}</div>
+                        <div class="queue-table">Meja ${order.tableId} • ${order.time} detik</div>
+                    </div>
+                `;
+                
+                queueItem.addEventListener('click', () => {
+                    selectTable(order.tableId);
+                });
+                
+                orderQueue.appendChild(queueItem);
+            });
+        }
+        
+        function animateQueueBadge() {
+            // Add bell animation to queue title
+            const queueTitle = document.querySelector('.queue-title');
+            queueTitle.classList.add('bell-ring');
+            setTimeout(() => {
+                queueTitle.classList.remove('bell-ring');
+            }, 500);
+        }
+        
+        function buyUpgrade(upgradeId) {
+            const upgradeIndex = gameState.upgrades.findIndex(u => u.id === upgradeId);
+            if (upgradeIndex === -1) return;
+            
+            const upgrade = gameState.upgrades[upgradeIndex];
+            
+            // Check if already purchased
+            if (upgrade.purchased) return;
+            
+            // Check if enough money
+            if (gameState.money < upgrade.price) {
+                showTemporaryMessage("Uang tidak cukup!", '#e74c3c');
+                return;
+            }
+            
+            // Play upgrade sound
+            playUpgradeSound();
+            
+            // Purchase upgrade
+            gameState.money -= upgrade.price;
+            upgrade.purchased = true;
+            
+            // Apply upgrade effect
+            switch (upgrade.effect) {
+                case 'tableCount':
+                    gameState.tableCount += upgrade.value;
+                    initializeRestaurantFloor();
+                    break;
+                case 'gameSpeed':
+                    gameState.gameSpeed *= upgrade.value;
+                    break;
+                case 'charactersLearned':
+                    gameState.charactersLearned = Math.min(14, gameState.charactersLearned + upgrade.value);
+                    break;
+                case 'reputation':
+                    gameState.reputation = Math.min(100, gameState.reputation + upgrade.value);
+                    break;
+                case 'menuUnlocked':
+                    // Unlock more menus
+                    initializeMenu();
+                    break;
+            }
+            
+            // Update UI
+            updateStats();
+            initializeUpgrades();
+            
+            // Show success message
+            showTemporaryMessage(`Upgrade "${upgrade.name}" berhasil dibeli!`, '#2ecc71');
+        }
+        
+        function showTemporaryMessage(text, color) {
+            const message = document.createElement('div');
+            message.textContent = text;
+            message.style.position = 'fixed';
+            message.style.top = '100px';
+            message.style.left = '50%';
+            message.style.transform = 'translateX(-50%)';
+            message.style.color = color;
+            message.style.background = 'rgba(0, 0, 0, 0.8)';
+            message.style.padding = '10px 20px';
+            message.style.borderRadius = '10px';
+            message.style.fontWeight = 'bold';
+            message.style.zIndex = '100';
+            message.style.textAlign = 'center';
+            message.style.border = `2px solid ${color}`;
+            message.style.boxShadow = `0 0 10px ${color}`;
+            message.style.animation = 'slideIn 0.3s ease';
+            
+            document.body.appendChild(message);
+            
+            // Remove message after 3 seconds
+            setTimeout(() => {
+                if (message.parentNode) {
+                    message.style.animation = 'fadeIn 0.3s ease reverse';
+                    setTimeout(() => {
+                        if (message.parentNode) {
+                            message.parentNode.removeChild(message);
+                        }
+                    }, 300);
+                }
+            }, 3000);
+        }
+        
+        function showMessage(title, text) {
+            messageTitle.textContent = title;
+            messageText.textContent = text;
+            messagePopup.classList.add('active');
+            
+            // Change buttons based on context
+            if (title === "Selamat Datang!") {
+                startGameBtn.style.display = 'inline-block';
+                tutorialBtn.style.display = 'inline-block';
+            } else {
+                startGameBtn.style.display = 'none';
+                tutorialBtn.style.display = 'none';
+                
+                // Auto-close after 5 seconds
+                setTimeout(() => {
+                    messagePopup.classList.remove('active');
+                }, 5000);
+            }
+        }
+        
+        function startGameLoop() {
+            // Spawn customers periodically
+            setInterval(() => {
+                if (gameState.gameActive && Math.random() > 0.7) {
+                    spawnCustomer();
+                }
+            }, 5000 / gameState.gameSpeed);
+            
+            // Random events
+            setInterval(() => {
+                if (gameState.gameActive && Math.random() > 0.8) {
+                    // Random event: boost reputation or money
+                    if (Math.random() > 0.5) {
+                        gameState.reputation = Math.min(100, gameState.reputation + 5);
+                        showTemporaryMessage("Ulasan bagus di media sosial! +5% reputasi", '#2ecc71');
+                    } else {
+                        const bonus = Math.floor(Math.random() * 50) + 10;
+                        gameState.money += bonus;
+                        showTemporaryMessage(`Pelanggan memberikan tip! +¥${bonus}`, '#f1c40f');
+                    }
+                    updateStats();
+                }
+            }, 15000 / gameState.gameSpeed);
+        }
+        
+        // EVENT LISTENERS
+        startGameBtn.addEventListener('click', initializeGame);
+        tutorialBtn.addEventListener('click', () => {
+            showMessage("Tutorial Game", `
+                1. Pelanggan akan datang dan memesan makanan dengan karakter Hanzi
+                2. Klik meja untuk melihat pesanan pelanggan
+                3. Pilih menu yang sesuai dengan karakter yang dipesan
+                4. Pelajari karakter baru di panel kanan
+                5. Gunakan uang untuk upgrade restoran
+                6. Jaga reputasi dengan melayani pelanggan dengan cepat dan benar
+            `);
+        });
+        
+        // Audio control event listeners
+        musicToggle.addEventListener('click', toggleMusic);
+        soundToggle.addEventListener('click', toggleSound);
+        
+        // Allow dropping ingredients on tables
+        restaurantFloor.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+        
+        restaurantFloor.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const ingredientIndex = e.dataTransfer.getData('text/plain');
+            const table = e.target.closest('.table');
+            
+            if (table && gameState.activeTable) {
+                const tableId = parseInt(table.dataset.tableId);
+                if (tableId === gameState.activeTable) {
+                    // Play drop sound
+                    playClickSound();
+                    
+                    // Add ingredient to order
+                    showTemporaryMessage("Bahan ditambahkan ke pesanan!", '#3498db');
+                }
+            }
+        });
+        
+        // Initialize game
+        window.addEventListener('load', () => {
+            // Show welcome message
+            showMessage("Selamat Datang!", "Selamat datang di Restoran Hanzi Harmony! Layani pelanggan dengan memilih menu yang sesuai dengan karakter yang mereka pesan.");
+            
+            // Initialize without starting game
+            updateStats();
+            initializeRestaurantFloor();
+            initializeMenu();
+            initializeUpgrades();
+            initializeCharacterLearning();
+            
+            // Initialize audio after user interaction
+            document.body.addEventListener('click', function initAudio() {
+                // Try to start audio context
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    const audioContext = new AudioContext();
+                    // Resume the audio context
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                } catch (e) {
+                    console.log("Web Audio API tidak didukung:", e);
+                }
+                
+                // Start background music if enabled
+                if (gameState.musicEnabled && gameState.audioEnabled) {
+                    startBackgroundMusic();
+                }
+                
+                // Remove the event listener after first click
+                document.body.removeEventListener('click', initAudio);
+            }, { once: true });
+        });
+    </script>
+</body>
+</html>
